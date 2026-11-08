@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Laporan Praktikum Backend Development - Pertemuan 6</title>
+<style>
+  @page {
+    size: A4;
+    margin: 2.5cm 2.5cm 2.5cm 2.5cm;
+    @bottom-right {
+      content: counter(page);
+    }
+  }
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 12pt;
+    line-height: 1.35;
+    color: #000;
+    margin: 0;
+    padding: 0;
+  }
+  .page-break {
+    page-break-before: always;
+  }
+  .cover {
+    text-align: center;
+    padding-top: 30px;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  h1.cover-title {
+    font-size: 16pt;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  h2.cover-sub {
+    font-size: 13pt;
+    font-weight: bold;
+    margin-bottom: 20px;
+    line-height: 1.3;
+  }
+  h3.cover-case {
+    font-size: 12pt;
+    font-weight: bold;
+    margin-top: 25px;
+    margin-bottom: 40px;
+  }
+  .cover-meta {
+    font-size: 11pt;
+    line-height: 1.6;
+    margin-top: 80px;
+  }
+  .cover-meta strong {
+    font-size: 12pt;
+  }
+  .cover-footer {
+    margin-top: 100px;
+    font-size: 11pt;
+    font-weight: bold;
+  }
+  h1 {
+    font-size: 14pt;
+    font-weight: bold;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    border-bottom: 1.5px solid #000;
+    padding-bottom: 4px;
+    text-transform: uppercase;
+  }
+  h2 {
+    font-size: 12pt;
+    font-weight: bold;
+    margin-top: 18px;
+    margin-bottom: 8px;
+  }
+  p {
+    text-align: justify;
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-indent: 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 10pt;
+  }
+  table, th, td {
+    border: 1px solid #000;
+  }
+  th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    text-align: center;
+    padding: 8px;
+  }
+  td {
+    padding: 6px 8px;
+    vertical-align: top;
+  }
+  .code-block {
+    background-color: #f8f8f8;
+    border: 1px solid #ccc;
+    border-left: 3px solid #333;
+    padding: 10px 12px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 9pt;
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin: 12px 0;
+    line-height: 1.25;
+  }
+  .image-container {
+    text-align: center;
+    margin: 16px 0;
+  }
+  .image-container img {
+    max-width: 90%;
+    height: auto;
+    border: 1px solid #ddd;
+  }
+  .caption {
+    font-size: 9.5pt;
+    font-style: italic;
+    margin-top: 6px;
+    text-align: center;
+  }
+  ul, ol {
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding-left: 24px;
+  }
+  li {
+    margin-bottom: 4px;
+    text-align: justify;
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <div>
+    <h1 class="cover-title">LAPORAN PRAKTIKUM BACKEND DEVELOPMENT</h1>
+    <h2 class="cover-sub">PERTEMUAN KE-6: PENGELOLAAN DATA LANJUTAN DENGAN<br>MODULAR MONOLITH & DOMAIN-DRIVEN DESIGN (DDD)</h2>
+    <h3 class="cover-case">STUDI KASUS: IMPLEMENTASI DDD PADA SISTEM PERPUSTAKAAN MODULAR<br>(CATALOG, MEMBERSHIP, DAN CIRCULATION CONTEXT)</h3>
+  </div>
+  
+  <div class="cover-meta">
+    <p style="text-align: center;">
+      <strong>Mata Kuliah:</strong> Backend Development (DT199)<br>
+      <strong>Bobot SKS:</strong> 4 SKS (2 Teori + 2 Praktikum)<br>
+      <strong>Dosen Pengampu:</strong> Tim Dosen Backend Development<br><br><br>
+      <strong>Disusun Oleh:</strong><br>
+      <strong>Nama Mahasiswa:</strong> Panji Prasetya<br>
+      <strong>Tautan Repository GitHub:</strong><br>
+      <a href="https://github.com/panjiprasetyaa/praktikum-backend-6.git" style="color: #000; text-decoration: underline;">https://github.com/panjiprasetyaa/praktikum-backend-6.git</a>
+    </p>
+  </div>
+
+  <div class="cover-footer">
+    PROGRAM STUDI TEKNIK INFORMATIKA / SISTEM INFORMASI<br>
+    TAHUN AKADEMIK 2026/2027
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- BAB I: PENDAHULUAN -->
+<h1>BAB I: PENDAHULUAN</h1>
+
+<h2>1.1 Latar Belakang</h2>
+<p>
+Dalam lanskap rekayasa perangkat lunak skala enterprise modern, arsitektur monolitik konvensional kerap kali menghadapi masalah degradasi keterawatan (maintainability) dan tingginya keterikatan antar komponen (high coupling) seiring bertambahnya kompleksitas fitur. Pendekatan <em>Modular Monolith</em> yang dipadukan dengan prinsip <em>Domain-Driven Design</em> (DDD) hadir sebagai solusi arsitektural yang tangguh: mempertahankan kepraktisan operasional dan deployment tunggal aplikasi monolitik, sembari menegakkan batas konteks domain (<em>Bounded Context</em>) yang disiplin layaknya arsitektur <em>microservices</em>.
+</p>
+<p>
+Pada praktikum Pertemuan ke-6 mata kuliah Backend Development (DT199), mahasiswa mempelajari teknik-teknik pengelolaan data tingkat lanjut menggunakan framework Laravel 13. Materi pokok yang dipelajari mencakup perancangan relasi Eloquent lanjutan (Many-to-Many dengan pivot custom bertanggal, relasi Self-referencing hierarkis, relasi agregat HasMany), eliminasi masalah performa <em>N+1 Query</em> melalui strategi <em>Eager Loading</em>, penjaminan konsistensi atomik menggunakan <em>Database Transaction</em> dengan auto-rollback, penerapan <em>Soft Deletes</em> untuk jejak audit (audit trail), perancangan <em>Value Objects</em> yang immutable, serta komunikasi nir-kopling melalui <em>Domain Events</em>.
+</p>
+
+<h2>1.2 Maksud dan Tujuan</h2>
+<p>Praktikum ini bertujuan agar mahasiswa memiliki kompetensi teknis dan analitis untuk:</p>
+<ol>
+  <li>Menjelaskan dan menerapkan konsep Domain-Driven Design (DDD) dan Bounded Context dalam arsitektur Modular Monolith pada framework Laravel 13.</li>
+  <li>Merancang dan mengimplementasikan relasi Eloquent lanjutan: Many-to-Many dengan kolom pivot <code>added_at</code>, Self-referencing pada kategori buku bertingkat, dan relasi agregat HasMany.</li>
+  <li>Menganalisis serta mengeliminasi masalah N+1 Query menggunakan Eager Loading (<code>with(...)</code>) dan menyusun Query Scopes yang reusable.</li>
+  <li>Menerapkan Database Transaction (<code>DB::transaction</code>) untuk menjamin atomisitas transaksi sirkulasi buku, serta membuktikan mekanisme rollback otomatis saat terjadi pelanggaran invariant stok habis.</li>
+  <li>Mengimplementasikan Soft Deletes dan fungsi restore data terhapus untuk menjamin integritas riwayat data historis.</li>
+  <li>Membangun Value Object (ISBN dan Denda) yang memvalidasi format masukan secara ketat dan menghitung tarif denda secara terpusat.</li>
+  <li>Memanfaatkan Domain Event (<code>BookBorrowed</code>) dan Listener untuk decoupled event-driven architecture antar bounded context.</li>
+</ol>
+
+<h2>1.3 Ruang Lingkup Sistem Perpustakaan Modular</h2>
+<p>
+Sistem Perpustakaan Modular yang dibangun mencakup tiga Bounded Context mandiri dan satu Shared Kernel:
+</p>
+<ul>
+  <li><strong>Catalog Context:</strong> Mengelola data master buku, pengarang, penerbit, dan kategori buku berjenjang (induk dan sub-kategori).</li>
+  <li><strong>Membership Context:</strong> Mengelola data master anggota perpustakaan, status keaktifan, dan hak akses (role).</li>
+  <li><strong>Circulation Context:</strong> Memproses peminjaman buku atomik, pencatatan snapshot judul & ISBN, pemantauan batas waktu pinjam, pengembalian buku, dan penghitungan denda otomatis.</li>
+  <li><strong>Shared Kernel:</strong> Memuat kontrak interface (<code>BookServiceInterface</code>, <code>MemberServiceInterface</code>), Value Objects (<code>ISBN</code>, <code>Denda</code>), dan custom exception yang digunakan bersama.</li>
+</ul>
+
+<div class="page-break"></div>
+
+<!-- BAB II: PERANCANGAN -->
+<h1>BAB II: PERANCANGAN ARSITEKTUR DAN BASIS DATA</h1>
+
+<h2>2.1 Konsep Bounded Context & Shared Kernel</h2>
+<p>
+Prinsip utama Domain-Driven Design menegaskan bahwa setiap Bounded Context memiliki model domain dan kepemilikan data (data ownership) sendiri. Modul Sirkulasi tidak diperkenankan mengakses tabel database atau model Eloquent milik modul Katalog secara langsung. Seluruh interaksi lintas modul harus melalui kontrak abstraksi (Interface) yang ditempatkan pada Shared Kernel atau dipicu melalui Domain Event.
+</p>
+
+<div class="image-container">
+  <img src="images/diagram_bounded_context_bw.png" alt="Diagram Bounded Context">
+  <div class="caption">Gambar 2.1 Diagram Bounded Context dan Shared Kernel (Format Monochrome)</div>
+</div>
+
+<h2>2.2 Penjelasan Aggregate Root dan Invariant Bisnis</h2>
+<p>
+Aggregate adalah sekumpulan objek domain yang diperlakukan sebagai satu kesatuan unit operasional. Pintu masuk utama aggregate dikontrol oleh <em>Aggregate Root</em>, yang bertanggung jawab mutlak memastikan terpeliharanya invariant (aturan validasi bisnis).
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width: 20%;">Bounded Context</th>
+      <th style="width: 18%;">Aggregate Root</th>
+      <th style="width: 25%;">Entities di Dalamnya</th>
+      <th>Invariant (Aturan Bisnis Utama)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Catalog Context</strong></td>
+      <td><code>Book (Buku)</code></td>
+      <td>Category, Author, Publisher</td>
+      <td>Stok buku tidak boleh negatif (&ge; 0); ISBN harus valid 10 atau 13 digit; Hanya buku berstatus aktif yang dapat dipinjam.</td>
+    </tr>
+    <tr>
+      <td><strong>Membership Context</strong></td>
+      <td><code>Member (Anggota)</code></td>
+      <td>Role</td>
+      <td>Kode anggota dan email harus unik; Peminjaman hanya diizinkan untuk anggota dengan status 'active' dan tidak melampaui kuota maksimal.</td>
+    </tr>
+    <tr>
+      <td><strong>Circulation Context</strong></td>
+      <td><code>Loan (Peminjaman)</code></td>
+      <td>LoanDetail, Fine (Denda)</td>
+      <td>Peminjaman wajib memotong stok buku secara atomik; Detail pinjaman wajib menyimpan snapshot judul & ISBN; Denda dihitung otomatis Rp 2.000/hari saat terlambat.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>2.3 Pemetaan Relasi Antar Tabel dan Snapshot Pattern</h2>
+<p>
+Perancangan skema relasi basis data mengimplementasikan spesifikasi teknis berikut:
+</p>
+<ol>
+  <li><strong>Relasi Many-to-Many dengan Pivot:</strong> Buku dan Kategori dihubungkan melalui tabel pivot <code>book_category</code> yang menyimpan atribut timestamp <code>added_at</code>.</li>
+  <li><strong>Relasi Self-Referencing:</strong> Tabel <code>categories</code> memiliki kolom foreign key <code>parent_id</code> yang mereferensikan <code>categories.id</code> untuk memodelkan struktur hierarkis tak terbatas (Kategori Induk &rarr; Sub-Kategori).</li>
+  <li><strong>Relasi Agregat HasMany:</strong> Tabel <code>loans</code> memiliki relasi One-to-Many terhadap <code>loan_details</code>.</li>
+  <li><strong>Snapshot Pattern (Data Historis):</strong> Tabel <code>loan_details</code> sengaja menduplikasi kolom <code>book_title</code> dan <code>book_isbn</code> saat transaksi peminjaman dibuat. Pendekatan ini merupakan best-practice DDD guna menjamin data historis peminjaman tidak terdistorsi jika data buku pada modul Katalog diubah atau dihapus di masa depan.</li>
+</ol>
+
+<div class="image-container">
+  <img src="images/diagram_erd_bw.png" alt="ERD Diagram">
+  <div class="caption">Gambar 2.2 Entity Relationship Diagram (ERD) Sistem Perpustakaan (Format Monochrome)</div>
+</div>
+
+<h2>2.4 Alur Database Transaction dan Mekanisme Auto-Rollback</h2>
+<p>
+Transaksi peminjaman buku menuntut pemenuhan karakteristik ACID (Atomicity, Consistency, Isolation, Durability). Operasi pembuatan peminjaman dibungkus dalam blok <code>DB::transaction()</code>. Ketika salah satu buku memiliki stok kosong, sistem segera melempar <code>InsufficientStockException</code>, yang memicu pembatalan total (auto-rollback) terhadap seluruh instruksi SQL dalam transaksi tersebut.
+</p>
+
+<div class="image-container">
+  <img src="images/diagram_transaction_flow_bw.png" alt="Flowchart Database Transaction">
+  <div class="caption">Gambar 2.3 Flowchart Database Transaction dan Mekanisme Rollback (Format Monochrome)</div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- BAB III: IMPLEMENTASI -->
+<h1>BAB III: IMPLEMENTASI SISTEM</h1>
+
+<h2>3.1 Struktur Direktori Modular Monolith</h2>
+<p>
+Aplikasi disusun dengan memisahkan domain ke dalam direktori <code>app/Modules/</code> yang terdaftar pada PSR-4 autoloading <code>composer.json</code>:
+</p>
+<div class="code-block">app/Modules/
+├── Catalog/
+│   ├── Migrations/ (create_categories_table, create_books_table, create_book_category_table)
+│   ├── Models/ (Book.php, Category.php)
+│   ├── Providers/ (CatalogServiceProvider.php)
+│   └── Services/ (CatalogService.php)
+├── Membership/
+│   ├── Migrations/ (create_members_and_roles_table.php)
+│   ├── Models/ (Member.php, Role.php)
+│   ├── Providers/ (MembershipServiceProvider.php)
+│   └── Services/ (MemberService.php)
+├── Circulation/
+│   ├── Events/ (BookBorrowed.php)
+│   ├── Listeners/ (LogBookBorrowedActivity.php)
+│   ├── Migrations/ (create_loans_details_fines_table.php)
+│   ├── Models/ (Loan.php, LoanDetail.php, Fine.php)
+│   ├── Providers/ (CirculationServiceProvider.php)
+│   └── Services/ (CirculationService.php)
+└── Shared/
+    ├── Contracts/ (BookServiceInterface.php, MemberServiceInterface.php)
+    ├── Exceptions/ (InsufficientStockException.php, MemberNotEligibleException.php)
+    └── ValueObjects/ (ISBN.php, Denda.php)</div>
+
+<h2>3.2 Implementasi Shared Kernel (Value Objects & Contracts)</h2>
+<p>
+Value Object <code>ISBN</code> melakukan validasi checksum digit format ISBN-10 maupun ISBN-13 secara ketat:
+</p>
+<div class="code-block">namespace Modules\Shared\ValueObjects;
+
+use InvalidArgumentException;
+
+class ISBN {
+    private string $value;
+    public function __construct(string $value) {
+        $cleaned = preg_replace('/[^0-9X]/i', '', $value);
+        if (!$this->isValid($cleaned)) {
+            throw new InvalidArgumentException("Format ISBN tidak valid: {$value}");
+        }
+        $this->value = strtoupper(trim($value));
+    }
+    // algoritma validasi check-digit modulo 10 & 11
+}</div>
+
+<p>
+Value Object <code>Denda</code> mengkapsulasi penghitungan denda harian dan pemformatan mata uang rupiah:
+</p>
+<div class="code-block">namespace Modules\Shared\ValueObjects;
+
+class Denda {
+    private int $daysOverdue;
+    private float $dailyRate;
+    private float $amount;
+
+    public function __construct(int $daysOverdue, float $dailyRate = 2000.0) {
+        if ($daysOverdue < 0) throw new \InvalidArgumentException("Hari keterlambatan tidak boleh negatif");
+        $this->daysOverdue = $daysOverdue;
+        $this->dailyRate = $dailyRate;
+        $this->amount = $daysOverdue * $dailyRate;
+    }
+
+    public function formatRupiah(): string {
+        return 'Rp ' . number_format($this->amount, 0, ',', '.');
+    }
+}</div>
+
+<h2>3.3 Implementasi Catalog Context (Relasi Lanjutan & Query Scopes)</h2>
+<p>
+Model <code>Category</code> mendukung struktur hierarkis melalui relasi Self-referencing:
+</p>
+<div class="code-block">namespace Modules\Catalog\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Category extends Model {
+    use SoftDeletes;
+    protected $fillable = ['name', 'slug', 'description', 'parent_id'];
+
+    public function parent() {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    public function children() {
+        return $this->hasMany(Category::class, 'parent_id');
+    }
+
+    public function books() {
+        return $this->belongsToMany(Book::class, 'book_category')->withPivot('added_at');
+    }
+}</div>
+
+<p>
+Model <code>Book</code> mengimplementasikan Soft Deletes, relasi Many-to-Many dengan pivot <code>added_at</code>, serta reusable Query Scopes:
+</p>
+<div class="code-block">namespace Modules\Catalog\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
+
+class Book extends Model {
+    use SoftDeletes;
+
+    public function categories() {
+        return $this->belongsToMany(Category::class, 'book_category')->withPivot('added_at');
+    }
+
+    public function scopeAvailable(Builder $query): Builder {
+        return $query->where('is_active', true)->where('stock', '>', 0);
+    }
+
+    public function scopeSearch(Builder $query, string $keyword): Builder {
+        return $query->where(function ($q) use ($keyword) {
+            $q->where('title', 'like', "%{$keyword}%")
+              ->orWhere('author', 'like', "%{$keyword}%")
+              ->orWhere('isbn', 'like', "%{$keyword}%");
+        });
+    }
+
+    public function scopeByCategory(Builder $query, int $categoryId): Builder {
+        return $query->whereHas('categories', fn($q) => $q->where('categories.id', $categoryId));
+    }
+}</div>
+
+<h2>3.4 Implementasi Circulation Context (Database Transaction & Snapshot)</h2>
+<p>
+Metode <code>borrowBooks()</code> pada <code>CirculationService</code> membungkus seluruh tahapan bisnis peminjaman ke dalam transaksi atomik:
+</p>
+<div class="code-block">public function borrowBooks(int $memberId, array $bookIds, int $loanDays = 7): Loan {
+    return DB::transaction(function () use ($memberId, $bookIds, $loanDays) {
+        if (!$this->memberService->canBorrow($memberId)) {
+            throw new MemberNotEligibleException("Member tidak aktif / melampaui kuota.");
+        }
+
+        $loan = Loan::create([
+            'loan_code'   => 'LOAN-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5)),
+            'member_id'   => $memberId,
+            'borrowed_at' => now(),
+            'due_date'    => now()->addDays($loanDays),
+            'status'      => 'borrowed',
+        ]);
+
+        foreach ($bookIds as $bookId) {
+            $book = $this->bookService->getBookForLoan($bookId);
+            if (!$this->bookService->isStockAvailable($bookId, 1)) {
+                // Memicu Exception -> Rollback transaksi otomatis
+                throw new InsufficientStockException($book['title'], $book['stock'], 1);
+            }
+
+            // Simpan snapshot judul & ISBN
+            LoanDetail::create([
+                'loan_id'    => $loan->id,
+                'book_id'    => $bookId,
+                'book_title' => $book['title'],
+                'book_isbn'  => $book['isbn'],
+            ]);
+
+            $this->bookService->reduceStock($bookId, 1);
+        }
+
+        event(new BookBorrowed($loan->load('details')));
+        return $loan->load('details');
+    });
+}</div>
+
+<h2>3.5 Riwayat Commit Git (Version Control Evidence)</h2>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 15%;">Commit Hash</th>
+      <th style="width: 50%;">Tipe & Pesan Commit</th>
+      <th>Keterangan Komponen Modul</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>b9d5b44</code></td>
+      <td>chore: initialize laravel 13 project for praktikum backend 6</td>
+      <td>Inisialisasi repositori Git dan proteksi file AI di .gitignore.</td>
+    </tr>
+    <tr>
+      <td><code>466e7b2</code></td>
+      <td>feat(shared): implement ISBN, Denda, exceptions, and contracts</td>
+      <td>Pembangunan Value Objects, Exceptions, dan Contracts Interface.</td>
+    </tr>
+    <tr>
+      <td><code>d6054f3</code></td>
+      <td>feat(catalog): implement books, hierarchical categories, and service</td>
+      <td>Migrasi, Model Buku-Kategori (pivot added_at), dan CatalogService.</td>
+    </tr>
+    <tr>
+      <td><code>fa76089</code></td>
+      <td>feat(membership): implement member models, roles, and service</td>
+      <td>Migrasi, Model Anggota, Roles, dan MemberService.</td>
+    </tr>
+    <tr>
+      <td><code>7c8a5b4</code></td>
+      <td>feat(circulation): implement borrow transactions and BookBorrowed event</td>
+      <td>Migrasi Peminjaman, Snapshot Detail, Domain Event, dan Transaksi.</td>
+    </tr>
+    <tr>
+      <td><code>2c153af</code></td>
+      <td>feat: register module service providers in bootstrap/providers.php</td>
+      <td>Pendaftaran seluruh provider modul ke arsitektur Laravel 13.</td>
+    </tr>
+    <tr>
+      <td><code>58933bf</code></td>
+      <td>feat(seeders): implement LibrarySeeder with books and members</td>
+      <td>Seeding data uji realistis dengan ISBN-13 tervalidasi.</td>
+    </tr>
+    <tr>
+      <td><code>33a6185</code></td>
+      <td>test: add automated feature tests and interactive library demo command</td>
+      <td>Pembuatan feature test suite otomatis dan console command demo.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<!-- BAB IV: PENGUJIAN -->
+<h1>BAB IV: HASIL PENGUJIAN DAN ANALISIS</h1>
+
+<h2>4.1 Pengujian Eliminasi Masalah N+1 Query (Query Optimization)</h2>
+<p>
+Pengujian dilakukan dengan mengaktifkan pencatatan log query SQL menggunakan <code>DB::enableQueryLog()</code>. Pada metode Lazy Loading biasa, perulangan 5 record peminjaman memicu 1 query induk ditambah 10 query anak (11 query SQL). Sebaliknya, dengan menerapkan strategi Eager Loading <code>with(['details', 'member'])</code>, seluruh relasi dimuat hanya dalam 3 query konstan.
+</p>
+
+<div class="image-container">
+  <img src="images/chart_query_comparison_bw.png" alt="Grafik Query Comparison">
+  <div class="caption">Gambar 4.1 Grafik Perbandingan Eksekusi Query Database (N+1 Query vs Eager Loading)</div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Metode Pengambilan Data</th>
+      <th>Jumlah Data Peminjaman</th>
+      <th>Jumlah Query SQL Dieksekusi</th>
+      <th>Status Efisiensi Performa</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Tanpa Eager Loading (Lazy Loading loop)</strong></td>
+      <td>5 Data Peminjaman</td>
+      <td>11 Query SQL</td>
+      <td>BOROS & LAMBAT (N+1 Query Problem)</td>
+    </tr>
+    <tr>
+      <td><strong>Dengan Eager Loading with(['details', 'member'])</strong></td>
+      <td>5 Data Peminjaman</td>
+      <td>3 Query SQL</td>
+      <td>SANGAT EFISIEN & CEPAT (Teroptimasi)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>4.2 Pengujian Database Transaction & Verifikasi Rollback</h2>
+<p>
+Pengujian dilakukan dengan mensimulasikan peminjaman buku yang stoknya kosong ('The Pragmatic Programmer', stok: 0). Sistem mendeteksi kekurangan stok saat transaksi berjalan dan melempar <code>InsufficientStockException</code>. Hasil pengujian membuktikan bahwa <code>DB::transaction()</code> membatalkan seluruh operasi secara utuh, sehingga tidak ada record sampah yang tertinggal di database.
+</p>
+<div class="code-block">Mencoba meminjam buku dengan stok kosong ('The Pragmatic Programmer: Your Journey To Mastery', stok: 0)...
+[BERHASIL] Exception tertangkap: Stok buku 'The Pragmatic Programmer' tidak mencukupi. Tersedia: 0, diminta: 1.
+[VERIFIKASI ROLLBACK] Record Loan sebelum: 5, sesudah: 5
+-> DB::transaction() berhasil membatalkan seluruh operasi secara atomik! Konsistensi basis data terjaga 100%.</div>
+
+<h2>4.3 Pengujian Soft Deletes & Restore</h2>
+<p>
+Pengujian membuktikan bahwa penghapusan data dengan <code>delete()</code> tidak menghilangkan baris data secara permanen, melainkan mengisi kolom <code>deleted_at</code>. Data yang terhapus dapat dipulihkan secara instan menggunakan <code>restore()</code>:
+</p>
+<div class="code-block">Menghapus buku #1 ('Clean Code') secara Soft Delete...
+- Book::count() (Record Aktif)               : 4 Buku
+- Book::withTrashed()->count() (Total Fisik)  : 5 Buku
+Mengembalikan buku dengan restore()...
+- Book::count() setelah restore             : 5 Buku [DATA PULIH SEMPURNA]</div>
+
+<h2>4.4 Hasil Uji Otomatis Feature Test Suite (Pest / PHPUnit)</h2>
+<p>
+Seluruh aspek fungsional sistem diuji menggunakan unit/feature test suite pada <code>tests/Feature/LibraryModularDDDTest.php</code>. Seluruh 6 unit skenario dinyatakan lulus 100%:
+</p>
+<div class="code-block">PASS Tests\Feature\LibraryModularDDDTest
+✓ test_relasi_lanjutan (Many-to-Many pivot added_at, Self-referencing, HasMany)
+✓ test_query_optimization_dan_scopes (Eager loading with() dan Query Scopes)
+✓ test_database_transaction_dan_rollback (Atomisitas & Auto-rollback)
+✓ test_soft_deletes_dan_restore (Audit trail soft delete & restore)
+✓ test_domain_event_dispatched (Event BookBorrowed dipancarkan)
+✓ test_value_objects_isbn_dan_denda (Validasi ISBN & kalkulasi denda)
+
+Tests: 6 passed (38 assertions) | Execution Duration: 1.05s</div>
+
+<div class="page-break"></div>
+
+<!-- BAB V: KESIMPULAN -->
+<h1>BAB V: KESIMPULAN</h1>
+<p>
+Berdasarkan seluruh tahapan perancangan, implementasi, dan pengujian yang telah diselesaikan pada Sistem Perpustakaan Modular berbasis Laravel 13, dapat ditarik beberapa kesimpulan pokok:
+</p>
+<ol>
+  <li><strong>Modularitas & Decoupling:</strong> Penerapan Modular Monolith dengan Domain-Driven Design (DDD) berhasil memecah kerumitan logika sistem ke dalam Bounded Context yang jelas (Catalog, Membership, Circulation, Shared Kernel). Ketergantungan langsung antar tabel berhasil dihilangkan melalui perantara Contract (Interface) dan Domain Event.</li>
+  <li><strong>Fleksibilitas Relasi Eloquent:</strong> Relasi Many-to-Many dengan pivot custom (<code>added_at</code>) dan Self-referencing hierarkis terbukti sangat ampuh memodelkan hubungan entitas dunia nyata, sedangkan Snapshot Pattern pada detail transaksi menjamin keaslian data historis.</li>
+  <li><strong>Efisiensi Query yang Terukur:</strong> Penggunaan Eager Loading terbukti memangkas jumlah eksekusi query dari 11 query menjadi 3 query konstan, mengeliminasi risiko kelambatan sistem akibat masalah N+1 Query.</li>
+  <li><strong>Konsistensi Data Transaksional:</strong> Pemanfaatan Database Transaction (<code>DB::transaction</code>) menjamin integritas data secara atomik, di mana kegagalan bisnis pada satu komponen secara otomatis membatalkan seluruh operasi tanpa anomali data.</li>
+  <li><strong>Integritas Domain melalui Value Objects:</strong> Pemakaian Value Object (ISBN dan Denda) memperkuat domain model aplikasi dengan memastikan data selalu valid sejak awal pembuatan objek.</li>
+</ol>
+
+<h1>LAMPIRAN: TAUTAN REPOSITORY GITHUB</h1>
+<p>Seluruh kode sumber, riwayat commit Git, modul, dan script pengujian dapat diakses pada repositori publik berikut:</p>
+<p style="font-size: 11pt; font-weight: bold; font-family: 'Consolas', monospace;">
+  🔗 <a href="https://github.com/panjiprasetyaa/praktikum-backend-6.git">https://github.com/panjiprasetyaa/praktikum-backend-6.git</a>
+</p>
+
+</body>
+</html>
