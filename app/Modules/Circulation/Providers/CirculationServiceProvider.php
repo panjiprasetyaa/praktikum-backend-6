@@ -17,6 +17,7 @@ class CirculationServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadMigrationsFrom(__DIR__ . '/../Migrations');
+        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
 
         // Mendaftarkan Domain Event & Listener
         Event::listen(

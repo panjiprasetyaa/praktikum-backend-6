@@ -15,6 +15,15 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('library.books.index')" :active="request()->routeIs('library.books.*')">
+                        {{ __('Katalog Buku') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('library.members.index')" :active="request()->routeIs('library.members.*')">
+                        {{ __('Anggota') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('library.loans.index')" :active="request()->routeIs('library.loans.*')">
+                        {{ __('Sirkulasi Peminjaman') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -69,6 +78,15 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('library.books.index')" :active="request()->routeIs('library.books.*')">
+                {{ __('Katalog Buku') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('library.members.index')" :active="request()->routeIs('library.members.*')">
+                {{ __('Anggota') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('library.loans.index')" :active="request()->routeIs('library.loans.*')">
+                {{ __('Sirkulasi Peminjaman') }}
             </x-responsive-nav-link>
         </div>
 

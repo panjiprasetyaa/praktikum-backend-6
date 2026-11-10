@@ -16,5 +16,6 @@ class MembershipServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadMigrationsFrom(__DIR__ . '/../Migrations');
+        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
     }
 }
